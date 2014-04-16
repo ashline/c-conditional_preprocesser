@@ -1,0 +1,12 @@
+ECOTE project
+-------------
+#21
+---------------------------------------------------------------------------------------------------
+Writea part of C preprocessor. Preprocessor enables conditional
+compilation (directives #ifdef,#ifndef, ...). Propose the directives recognised by this preprocessor
+--
+deadlines
+---------
+-> functional specification- 07/05/2014
+---------------------------------------------------------------------------------------------------
+
