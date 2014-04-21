@@ -2,7 +2,7 @@ ECOTE project
 -------------
 #21
 ---------------------------------------------------------------------------------------------------
-Writea part of C preprocessor. Preprocessor enables conditional
+Write a part of C preprocessor. Preprocessor enables conditional
 compilation (directives #ifdef,#ifndef, ...). Propose the directives recognised by this preprocessor
 --
 deadlines
