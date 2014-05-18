@@ -2,6 +2,8 @@
 */
 #define HASHVAL_MAX 0xFFFFFFFFUL //max value that can be stored in an unsigned long int
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 struct _element{
 	char* macro;// name of defined macro
 	struct _element *next;//for chaining
@@ -65,10 +67,10 @@ unsigned int hash(hashtable* h_table, char* key)
 */
 int lookup_macro(hashtable* h_table, char* macro){
 	int bucket= 0;
-	element* target;
+	element* cur;
 	bucket = hash(h_table,macro);
-	for(target= h_table->table[bucket];target!=NULL;target=target->next){
-		if(strcmp(macro,element->macro)) return 0;
+	for(cur= h_table->table[bucket];cur!=NULL;cur=cur->next){
+		if(strcmp(macro,cur->macro)==0) return 0;
 	}
 	return 1;
 }
@@ -97,7 +99,7 @@ int add_macro(hashtable* h_table,char* new_macro){
 		//check if the first element is greater than the new one
 		if(strcmp(cur->macro, new_macro)>0){
 			new_element->next=cur;
-			htable->table[bucket]=new_element;	
+			h_table->table[bucket]=new_element;	
 		}
 		else{//insert the new element into appropriate place , sorted list
 			prev = cur;
@@ -123,7 +125,7 @@ int remove_macro(hashtable* h_table,char *target_macro){
 	
 	cur= h_table->table[bucket];	
 	
-	if(srcmp(cur->macro,target_macro)==0){//if the first element is the target
+	if(strcmp(cur->macro,target_macro)==0){//if the first element is the target
 		h_table->table[bucket] = cur->next;
 	}
 	else{
@@ -148,16 +150,17 @@ free memory used by the table
 int destroy_table(hashtable* h_table){
 	int i=0;
 	element* cur=NULL;
-	element* prev=NULL;
+	element* tmp=NULL;
 	if(h_table ==NULL) return 1;
 	
 	for(i=0;i<h_table->size;i++){
 		cur = h_table->table[i];
+		tmp= cur;
 		while(cur!=NULL){
-			prev= cur;
-			cur=cur->next;
+			tmp=cur->next;
 			free(cur->macro);
 			free(cur);
+			cur= tmp;
 		}
 	}
 
@@ -170,22 +173,23 @@ int print_table(hashtable* h_table){
 	int i=0;
 	element* cur= NULL;
 
-	if(h_table=NULL) return 1;
-	printf("Contents of hashtable\n");
-	printf("------------------------------------------------------------\n");
+	if(h_table==NULL) return 1;
+	printf("\nContents of hashtable\n");
+	printf("============================================================\n");
 	printf("Bucket\t\tContents\n");
+	printf("============================================================\n");
 	
-	for(i=0;i<h_table->size;i++){
+	for(i=1;i<=h_table->size;i++){
 		printf("%d.\t\t",i);
-		cur=h_table->table[i];
+		cur=h_table->table[i-1];
 		
 		while(cur!=NULL){
 			if(cur->next==NULL)
-				printf("%s\n",cur->macro);
+				printf("%s",cur->macro);
 			else
 				printf("%s, ",cur->macro);
 			cur=cur->next;
 		}
-	printf("------------------------------------------------------------\n");
+	printf("\n------------------------------------------------------------\n");
 	}
 }
