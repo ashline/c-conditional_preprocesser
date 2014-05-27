@@ -11,8 +11,7 @@ int find_end_of_line(FILE *in,FILE *out);
 
 /*this is the main function of the algorithm it receives a file pointer to an opened input file and then scans it for comments*/
 
-int removeComments(FILE *in){
-	
+int remove_comments(FILE *in){
 	unsigned int c;
 	FILE *out = fopen("commentless.c","w");
 	if (out==NULL) return 1;//error opening file
@@ -31,12 +30,16 @@ int removeComments(FILE *in){
 				break;
 		}
 	}	
+
+	fclose(out);
 }
+
 int send_to_output(unsigned int c, FILE *out){
 	if(fputc(c,out)!=c)
 		printf("error writing to commentless file\n");
 
 }
+
 int find_closing_quote(FILE *in,FILE *out){
 	unsigned int c;
 	while((c=fgetc(in))!='"'){
@@ -48,6 +51,7 @@ int find_closing_quote(FILE *in,FILE *out){
 			send_to_output(c,out);
 		}
 	}
+	send_to_output('"',out);
 }
 
 int check_if_comment(FILE *in,FILE *out){
@@ -69,7 +73,6 @@ int check_if_comment(FILE *in,FILE *out){
 }
 
 int find_comment_end(FILE *in,FILE *out){
-	
 	unsigned int c;
 	while(1){
 		c=fgetc(in);
@@ -90,14 +93,11 @@ int find_comment_end(FILE *in,FILE *out){
 			printf("error unexpected end of input, expected */");
 			break;
 		}
-		else
-			send_to_output(c,out);
 	}
 }
 
 int find_end_of_line(FILE *in,FILE *out){
 	unsigned int c;
-
 	while(1){
 		c=fgetc(in);
 		if (c==EOF) break;
