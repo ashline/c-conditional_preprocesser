@@ -7,6 +7,7 @@ unsigned int cnl=0;// current nest level, used to keep track of nested condition
 
 FILE* eout=NULL;
 char* cur_line=NULL;
+char* input_file_name =NULL;
 unsigned int line_count=0; 
 int dir_check=0;
 size_t len = 0;
@@ -96,6 +97,9 @@ int preprocess(FILE *in,char* output_file_name){
 	//eof	
 	if(nlbp>0)//procesing branch
 		send_to_error_output("unexpected end of input, expected #else or #endif");
+	//clean_up
+	if(eout !=NULL)
+		fclose(eout), eout=NULL;
 	destroy_table(macro_ht);
 	free(cur_line);
 }
@@ -268,7 +272,13 @@ char *substring(char *string, int position, int length){
 }
 
 int send_to_output(FILE *out,char* msg){
+	if(fputs(msg,out)<0)
+		fprintf(stderr,"error writing to output file");	
 }
 
 int send_to_error_output(char* msg){
+	if (eout==NULL)
+		if((eout = fopen("error_log","a"))==NULL) return 1;//error message
+	if(fprintf(eout,"%s::%d::%s",input_file_name,line_count,msg)<0)
+		fprintf(stderr,"error writing to error output\n");
 }
