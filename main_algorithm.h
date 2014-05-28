@@ -21,6 +21,7 @@ int find_else_or_endif();
 int send_to_output(FILE *out,char* msg);
 int preprocess(FILE *in,char* output_file_name);
 int check_line_for_directives();
+char *substring(char *string, int position, int length);
 /*
 entrance part  of the main algorithm, it receieves an opened file pointer and performs the preprocessing on it
 */
@@ -29,7 +30,7 @@ int preprocess(FILE *in,char* output_file_name){
 	FILE *commentless,*out;
 	hashtable * macro_ht = create_table(10);
 	remove_comments(in);
-		
+
 	if((commentless=fopen("commentless.c","r"))==NULL) return 1;//error message 	
 	if((out=fopen(output_file_name,"w"))==NULL) return 1;//error message
 	
@@ -54,7 +55,7 @@ int preprocess(FILE *in,char* output_file_name){
 					if(cur_macro!=NULL){
 						++nlbp;//open conditional branch
 						if(lookup_macro(macro_ht,cur_macro)==1){
-							find_else_or_endif(FILE *in);
+							find_else_or_endif(in);
 						}
 						free(cur_macro), cur_macro=NULL;
 					}	
@@ -63,14 +64,14 @@ int preprocess(FILE *in,char* output_file_name){
 					if(cur_macro!=NULL){
 						++nlbp;//open conditional branch
 						if(lookup_macro(macro_ht,cur_macro)==0){
-							find_else_or_endif(FILE *in);
+							find_else_or_endif(in);
 						}
 						free(cur_macro), cur_macro=NULL;
 					}	
 					break;
 				case ELSE://else
-					if(nlbp>0)//processing branch
-						find_endif(FILE *in);
+					if(nlbp>0){//processing branch
+						find_endif(in);
 						--nlbp;//close branch
 					}
 					else{
@@ -89,14 +90,14 @@ int preprocess(FILE *in,char* output_file_name){
 				}
 		}
 		else if(dir_check==1)
-			send_to_output(cur_line,out);
+			send_to_output(out,cur_line);
 		//else dont send line to output, error in directive usage
 	}
 	//eof	
 	if(nlbp>0)//procesing branch
 		send_to_error_output("unexpected end of input, expected #else or #endif");
 	destroy_table(macro_ht);
-	free(line);
+	free(cur_line);
 }
 
 int find_endif(FILE *in){
@@ -138,8 +139,9 @@ int find_else_or_endif(FILE *in){
 					++cnl;
 					break;
 				case ELSE://else
-					if(cnl==0){
+					if(cnl==0)
 						found=1;
+					break;
 				case ENDIF://endif
 					if (cnl>0)
 						--cnl;
@@ -181,7 +183,7 @@ int check_line_for_directives(){
 			}
 		}
 //if (pos1==pos2)//no directive here return 2// maybe not
-		directive=substring(line,pos1,pos2-pos1+1);
+		directive=substring(cur_line,pos1,(pos2-pos1+1));
 		if (strcmp(directive,"#define")==0){
 			cur_directive = DEFINE;
 			check_macro=1;
@@ -232,15 +234,14 @@ int check_line_for_directives(){
 			send_to_error_output("missing macro in directive");
 		}
 		else{
-			cur_macro = substring(*line,pos1,pos2-pos1+1);
+			cur_macro = substring(cur_line,pos1,pos2-pos1+1);
 		}
 	}
 	free(directive);
 	return 0;
 }
 
-char *substring(char *string, int position, int length) 
-{
+char *substring(char *string, int position, int length){
    char *sub;
    int c;
  
@@ -264,4 +265,10 @@ char *substring(char *string, int position, int length)
    *(sub+c) = '\0';
  
    return sub;
+}
+
+int send_to_output(FILE *out,char* msg){
+}
+
+int send_to_error_output(char* msg){
 }
