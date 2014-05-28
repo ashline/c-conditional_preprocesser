@@ -29,17 +29,20 @@ int print_table(hashtable* h_table);
 /*create hashtable
  size parameter represents the desired size of the table ie number of buckets
 */
-hashtable* create_table(int size)
-{
+hashtable* create_table(int size){
 	int i;
 	hashtable* new_table;
 	if (size<1) return NULL; //cant create a table without buckets
-	if((new_table=malloc(sizeof(hashtable)))==NULL) return NULL;//if memory allocation fails then return null
+	if((new_table=malloc(sizeof(hashtable)))==NULL){//if memory allocation fails then return null
+		printf("Unable to allocate memory.\n");
+		exit(1);
+   	}
 	/*allocate memory for all the buckets*/
-	if((new_table->table= malloc(sizeof(element*)*size))==NULL)
-	{ 
+	if((new_table->table= malloc(sizeof(element*)*size))==NULL){ 
 		//deallocate mem allocated for newtable
-		return NULL;
+		free(new_table);
+      		printf("Unable to allocate memory.\n");
+      		exit(1);
 	}
 	/*set size of table*/
 	new_table->size = size;
@@ -50,8 +53,7 @@ hashtable* create_table(int size)
 }
 
 /*simple hash function, converts key to integer and then determines the bucket by modulus operation with the size of the table*/
-unsigned int hash(hashtable* h_table, char* key)
-{
+unsigned int hash(hashtable* h_table, char* key){
 	int i = 0;
 	unsigned long int hashval=0;//potential bug
 	
@@ -83,7 +85,10 @@ int add_macro(hashtable* h_table,char* new_macro){
 
 	int bucket = hash(h_table,new_macro);
 	
-	if((new_element=malloc(sizeof(element)))==NULL) return 1;
+	if((new_element=malloc(sizeof(element)))==NULL){
+      		printf("Unable to allocate memory.\n");
+      		exit(1);
+   	}
 	
 	if(lookup_macro(h_table,new_macro)==0) return 0;
 
@@ -112,7 +117,7 @@ int add_macro(hashtable* h_table,char* new_macro){
 			new_element->next=cur;
 		}
 	}
-	
+	return 0;
 }
 
 int remove_macro(hashtable* h_table,char *target_macro){
