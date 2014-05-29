@@ -117,6 +117,9 @@ int add_macro(hashtable* h_table,char* new_macro){
 			new_element->next=cur;
 		}
 	}
+#ifdef DBUG
+	printf("[%s] added to hashtable\n",new_macro);
+#endif
 	return 0;
 }
 
@@ -148,6 +151,9 @@ int remove_macro(hashtable* h_table,char *target_macro){
 	free(cur->macro);
 	free(cur);
 	
+#ifdef DBUG
+	printf("[%s] removed from hashtable\n",target_macro);
+#endif
 }
 /*
 free memory used by the table
