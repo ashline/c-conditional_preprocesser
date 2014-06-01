@@ -1,1 +1,2 @@
-testfile::61::unexpected end of input expected #endif
+test_cases/test14.c::7::unexpected #else directive with no opening statement 
+test_cases/test14.c::9::unexpected #endif directive with no opening statement 

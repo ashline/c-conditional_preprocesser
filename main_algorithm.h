@@ -1,13 +1,10 @@
 #include <malloc.h>
 #include "hashtable.h"
 #include "remcomments.h"
-
 unsigned int nlbp=0;// nest level being processed, used to keep track of nested conditions particularly the ones in which the condition is fulfilled
 unsigned int cnl=0;// current nest level, used to keep track of nested conditions particularly the ones in which the condition is NOT fulfilled
 
-FILE* eout=NULL;
 char* cur_line=NULL;
-char* input_file_name =NULL;
 char* output_file_name =NULL;
 unsigned int line_count=0; 
 int dir_check=0;
@@ -41,6 +38,10 @@ int preprocess(FILE *in){
 		fprintf(stderr,"Error, could not open file %s for writing\n",output_file_name);
 		return 1;
 	}
+	if((eout = fopen("error_log","a"))==NULL){
+		fprintf(stderr,"error opening error output file\n");
+		return 1;
+	}
 	
 	while((read=getline(&cur_line,&len,commentless))!= -1){//read next line
 		line_count++;
@@ -63,7 +64,8 @@ int preprocess(FILE *in){
 					if(cur_macro!=NULL){
 						++nlbp;//open conditional branch
 						if(lookup_macro(macro_ht,cur_macro)==1){
-							find_else_or_endif(commentless);
+							if(find_else_or_endif(commentless)==2)//endif
+							--nlbp;//close branch after #endif found
 						}
 						free(cur_macro), cur_macro=NULL;
 					}	
@@ -72,7 +74,8 @@ int preprocess(FILE *in){
 					if(cur_macro!=NULL){
 						++nlbp;//open conditional branch
 						if(lookup_macro(macro_ht,cur_macro)==0){
-							find_else_or_endif(commentless);
+							if(find_else_or_endif(commentless)==2)//endif
+								--nlbp;//close branch after #endif found
 						}
 						free(cur_macro), cur_macro=NULL;
 					}	
@@ -80,7 +83,7 @@ int preprocess(FILE *in){
 				case ELSE://else
 					if(nlbp>0){//processing branch
 						find_endif(commentless);
-						--nlbp;//close branch
+						--nlbp;//close branch after #endif found
 					}
 					else{
 						send_to_error_output("unexpected #else directive with no opening statement");
@@ -100,8 +103,13 @@ int preprocess(FILE *in){
 		else if(dir_check==1)
 			send_to_output(out,cur_line);
 		//else dont send line to output, error in directive usage
+		else if(dir_check==2)
+			find_endif(commentless);
 	}
 	//eof	
+#ifdef DBUG
+	printf("[%d] nlbp \n",nlbp);
+#endif
 	if(nlbp>0)//procesing branch
 		send_to_error_output("unexpected end of input, expected #else or #endif");
 	//clean_up
@@ -140,8 +148,7 @@ int find_endif(FILE *in){
 
 int find_else_or_endif(FILE *in){
 
-	short found =0;
-	while(found==0 && (read=getline(&cur_line,&len,in))!= -1){//read next line
+	while((read=getline(&cur_line,&len,in))!= -1){//read next line
 		line_count++;
 		if (check_line_for_directives()==0){
 			switch(cur_directive){
@@ -153,13 +160,13 @@ int find_else_or_endif(FILE *in){
 					break;
 				case ELSE://else
 					if(cnl==0)
-						found=1;
+						return(1);
 					break;
 				case ENDIF://endif
 					if (cnl>0)
 						--cnl;
 					else
-						found = 1;
+						return(2);
 					break;
 			
 			}
@@ -249,6 +256,7 @@ int check_line_for_directives(){
 		}
 		if(pos1==pos2){ //check if pos1 ==pos 2 if so then macro isnt there
 			send_to_error_output("missing macro in directive");
+			return 2;
 		}
 		else{
 			cur_macro = substring(cur_line,pos1,pos2-pos1);
@@ -269,7 +277,7 @@ char *substring(char *string, int position, int length){
  
    if (sub == NULL)
    {
-      printf("Unable to allocate memory.\n");
+      fprintf(stderr,"Unable to allocate memory.\n");
       exit(1);
    }
  
@@ -288,13 +296,15 @@ char *substring(char *string, int position, int length){
 }
 
 int send_to_output(FILE *out,char* msg){
-	if(fputs(msg,out)<0)
+	if(fputs(msg,out)<0){
 		fprintf(stderr,"error writing to output file\n");	
+      		exit(1);
+	}
 }
 
 int send_to_error_output(char* msg){
-	if (eout==NULL)
-		if((eout = fopen("error_log","a"))==NULL) return 1;//error message
-	if(fprintf(eout,"%s::%d::%s\n",input_file_name,line_count,msg)<0)
+	if(fprintf(eout,"%s::%d::%s \n",input_file_name,line_count,msg)<0){
 		fprintf(stderr,"error writing to error output file\n");
+      		exit(1);
+	}
 }

@@ -3,8 +3,10 @@
 #define FOO
 
 int main (){
-	printf(“This should be seen”);
+
+#ifndef FOO
+	printf(“This should not be seen”);
 #else
 	printf(“This should be seen”);
-#endif
+
 }

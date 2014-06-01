@@ -10,6 +10,8 @@ int main(int argc,char* argv[]){
 	if(argc>2){
 		output_file_name = argv[2];
 		}
+	else	
+		output_file_name = "output.c";
 	
 	if((in=fopen(input_file_name,"r"))==NULL){
 		fprintf(stderr,"Could not open input file: %s\n",input_file_name);
@@ -17,6 +19,7 @@ int main(int argc,char* argv[]){
 	}
 
 	preprocess(in);
+//	printf("%s\n",output_file_name);
 	fclose(in);
 	exit(0);
 }	

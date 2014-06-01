@@ -1,0 +1,588 @@
+##############################################################
+Running tests for C conditional directive preprocessor
+##############################################################
+
+Test 1
+------
+Goal:Testing behaviour when no directives are present
+
+Input
+----- 
+#include<stdio.h>
+
+int main (){
+
+printf(“This should be seen”);
+
+}
+-----------------------------------------------------
+Output
+------
+
+int main (){
+
+printf(“This should be seen”);
+
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 2
+------
+Goal:Testing behaviour when no conditional directives 
+are present but #define is present
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+
+printf(“This should be seen”);
+
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+printf(“This should be seen”);
+
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 3
+------
+Goal:Testing comment removal
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO// macro /*definition
+
+/*main /*function //below*/
+
+int main (){
+
+printf(“This should be seen”);
+
+}
+-----------------------------------------------------
+Output
+------
+
+
+
+
+int main (){
+
+printf(“This should be seen”);
+
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 4
+------
+Goal:Testing definition of single macro and #ifdef, 
+     #ifndef, #endif for defined and undefined macros
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+
+#ifdef FOO
+	printf(“This should be seen”);
+#endif
+
+#ifdef BAR
+	printf(“This should not be seen”);
+#endif
+
+#ifndef FOO
+	printf(“This should not be seen”);
+#endif
+
+#ifndef BAR
+	printf(“This should be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+	printf(“This should be seen”);
+
+
+
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 5
+------
+Goal:Testing #ifdef, #else, #endif when macro is added,
+     removed and added again
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+
+#ifdef FOO
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+
+#undef FOO
+
+#ifdef FOO
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+
+#define FOO
+
+#ifdef FOO
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+	printf(“This should be seen”);
+
+
+	printf(“This should be seen”);
+
+
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 6
+------
+Goal:Testing #ifndef, #else, #endif when macro is added, 
+     removed and added again
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+
+#ifndef FOO
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+
+#undef FOO
+
+#ifndef FOO
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+
+#define FOO
+
+#ifndef FOO
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+	printf(“This should be seen”);
+
+
+	printf(“This should be seen”);
+
+
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 7
+------
+Goal:Testing #ifdef #else #endif for multiple defined 
+     macros
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+#define BAR
+
+#define BAZ
+
+int main (){
+
+#ifdef FOO
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+
+#ifdef BAR
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+
+#ifdef BAZ
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+
+
+int main (){
+
+	printf(“This should be seen”);
+
+	printf(“This should be seen”);
+
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 8
+------
+Goal:Testing #ifdef #else, #endif for multiple undefined 
+     macros
+
+Input
+----- 
+#include<stdio.h>
+
+int main (){
+
+#ifdef FOO
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+
+#ifdef BAR
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+
+#ifdef BAZ
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+int main (){
+
+	printf(“This should be seen”);
+
+	printf(“This should be seen”);
+
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 9
+------
+Goal:Testing #ifndef #else #endif for multiple defined 
+macros
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+#define BAR
+#define BAZ
+
+int main (){
+
+#ifndef FOO
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+
+#ifndef BAR
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+
+#ifndef BAZ
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+	printf(“This should not be seen”);
+
+	printf(“This should not be seen”);
+
+	printf(“This should not be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 10
+------
+Goal:Testing #ifndef ,#else, #endif for multiple 
+undefined macros
+
+Input
+----- 
+#include<stdio.h>
+
+int main (){
+
+#ifndef FOO
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”)
+#endif
+
+#ifndef BAR
+	printf(“This should be seen”)
+#else
+	printf(“This should not be seen”)
+#endif
+
+#ifndef BAZ
+	printf(“This should be seen”);
+#else
+	printf(“This should not be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+int main (){
+
+	printf(“This should be seen”);
+
+	printf(“This should be seen”)
+
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 11
+-------
+Goal:Testing nested conditions
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+
+#ifndef FOO
+	printf(“This should not be seen”);
+	#ifdef FOO
+		printf(“This should not be seen”);
+	 #else
+
+ 		printf(“This should not be seen”);
+	#endif
+#else
+	printf(“This should be seen”);
+	#ifdef BAR
+		printf(“This should not be seen”);
+	#else
+		printf(“This should be seen”);
+	#endif
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+	printf(“This should be seen”);
+		printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+#############################################################
+
+Test 12
+-------
+Goal:Testing mismatched comments
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+/*main function below
+
+int main (){
+
+  printf(“This should be not be seen”);
+
+}
+-----------------------------------------------------
+Output
+------
+
+
+----------------------------------------------------
+Error Output
+------------ 
+test_cases/test12.c::error unexpected end of input, expected */
+#############################################################
+
+Test 13
+-------
+Goal:Testing mismatched conditions, missing #endif
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+
+#ifndef FOO
+	printf(“This should not be seen”);
+#else
+	printf(“This should be seen”);
+
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+
+	printf(“This should be seen”);
+
+}
+----------------------------------------------------
+Error Output
+------------ 
+test_cases/test13.c::12::unexpected end of input, expected #else or #endif 
+#############################################################
+
+Test 14
+-------
+Goal:Testing mismatched conditions, missing opening 
+statement
+
+Input
+----- 
+#include<stdio.h>
+
+#define FOO
+
+int main (){
+	printf(“This should be seen”);
+#else
+	printf(“This should be seen”);
+#endif
+}
+-----------------------------------------------------
+Output
+------
+
+
+int main (){
+	printf(“This should be seen”);
+	printf(“This should be seen”);
+}
+----------------------------------------------------
+Error Output
+------------ 
+test_cases/test14.c::7::unexpected #else directive with no opening statement 
+test_cases/test14.c::9::unexpected #endif directive with no opening statement 
+#########################################################
