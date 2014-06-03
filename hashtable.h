@@ -55,7 +55,7 @@ hashtable* create_table(int size){
 /*simple hash function, converts key to integer and then determines the bucket by modulus operation with the size of the table*/
 unsigned int hash(hashtable* h_table, char* key){
 	int i = 0;
-	unsigned long int hashval=0;//potential bug
+	unsigned long int hashval=0;
 	
 	while((hashval< HASHVAL_MAX) && (i<strlen(key))){
 		hashval = hashval << 8;

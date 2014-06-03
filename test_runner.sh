@@ -346,7 +346,29 @@ _eoi_
 		------------ 
 _eoi_
 		cat error_log
+cat <<- _eoi_
+	#############################################################
+
+	Test 15
+	-------
+		Goal:Testing missing macros on conditions
+
+		Input
+		----- 
+_eoi_
+		cat test_cases/test15.c
+		cat <<- _eoi_
+		-----------------------------------------------------
+		Output
+		------
+_eoi_
+		./cdpp test_cases/test15.c test_cases/result15.c
+		cat test_cases/result15.c
+		cat <<- _eoi_
+		----------------------------------------------------
+		Error Output
+		------------ 
+_eoi_
+		cat error_log
 		
 echo "#########################################################"
-	
-		
